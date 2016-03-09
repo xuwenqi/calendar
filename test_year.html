@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    
+
+    <style type="text/css">
+        body{
+            font-family: STHeiti Light [STXihei];
+            margin: 0;
+        }
+        .oneDay{
+            border-bottom: 1px solid #ccc;
+            width: 14.2857%;
+            -webkit-box-sizing: border-box;
+            height: 60px;
+            float: left;
+            border-collapse:collapse;
+            text-align: center;
+            line-height: 40px;
+            font-weight: 600;
+            font-size: 16px;
+            list-style-type: none;}
+        .title{
+            font-size: 20px;
+            -webkit-margin-after: 0;
+            /*-webkit-margin-before: 0;*/
+            padding-left: 5.5%;
+            border-bottom: 1px solid #ccc;
+            line-height: 40px;
+            font-weight: 500;
+            color: #2c62d5;
+        }
+
+        .weeks{
+            /*border: #fff 1px solid;*/
+            border-bottom: rgb(170,170,170) 1px solid;
+            border-top: rgb(170,170,170) 1px solid;
+            width: 14.05%;
+            height: 45px;
+            line-height: 70px;
+            float: left;
+            border-collapse:collapse;
+            text-align: center;
+            font-size: 14px;
+            list-style-type: none;
+        }
+        .week-con{
+            position: fixed;
+            top: 0px;
+            width:100%;
+            padding: 0;
+            margin: 0;
+            background: rgba(170, 170, 170,0.9);
+
+        }
+        .calculate-con{
+            border: 1px #fff;
+            width: 100%;
+            height: auto;
+            overflow: hidden;
+            padding-top: 33px;
+
+        }
+    </style>
+</head>
+<body>
+<ul class="week-con">
+    <li class="weeks">日</li>
+    <li class="weeks">一</li>
+    <li class="weeks">二</li>
+    <li class="weeks">三</li>
+    <li class="weeks">四</li>
+    <li class="weeks">五</li>
+    <li class="weeks">六</li>
+</ul>
+
+
+
+
+<script type="text/javascript">
+
+
+var data = [{"year":2016,
+    "month":3,
+    "day":1},
+    {"year":2016,
+        "month":3,
+        "day":2},
+    {"year":2016,
+        "month":3,
+        "day":5},
+    {"year":2016,
+        "month":3,
+        "day":2},
+    {"year":2016,
+        "month":4,
+        "day":2},
+    {"year":2016,
+        "month":4,
+        "day":3},
+    {"year":2016,
+        "month":4,
+        "day":4},
+    {"year":2016,
+        "month":5,
+        "day":10},
+    {"year":2016,
+        "month":5,
+        "day":11},
+    {"year":2016,
+        "month":5,
+        "day":12},
+    {"year":2016,
+        "month":6,
+        "day":2}]
+
+
+
+
+
+function getMonthDay(year,month){
+    return new Array(31,(year%100==0?res=(year%400==0?1:0):res=(year%4==0?1:0))?29:28,31,30,31,30,31,31,30,31,30,31)[month];
+}                               //获取一个月有多少天
+
+
+function setDays(date){
+
+    var m = date.getMonth();
+    var y = date.getFullYear();
+
+    var firstDay = new Date(y,m,1);
+
+    var nullDays = firstDay.getDay();
+    var days = nullDays+getMonthDay(y,m);
+    var allDays = new Array();
+
+    for (var i = 0; i < days; i++) {
+        if (i<nullDays){
+            allDays[i] = 0;
+            continue;
+        }
+        allDays[i] = i-nullDays+1;
+    };
+    return allDays;
+}
+
+
+function createCalculate(date,n){
+    var y = date.getFullYear();
+    var m = date.getMonth()+1;
+    var idStr = y +"_"+ m;
+
+    var calculatecon = document.createElement('div');
+    calculatecon.id = idStr;
+    calculatecon.className = "calculate-con"
+    var body = document.getElementsByTagName('body')[0];
+    drawTitle(calculatecon,idStr);
+    var dayArray = setDays(date);
+    drawDays(calculatecon, idStr, dayArray);
+
+    if(n<0){
+        var firstDiv = document.getElementsByTagName('div')[0];
+        body.insertBefore(calculatecon,firstDiv);
+    }else{
+        body.appendChild(calculatecon);
+    }
+
+}
+
+
+function drawTitle(calculatecon,idStr){
+    // body.appendChild(calculatecon);
+    var title = document.createElement('p');
+    title.className = 'title';
+    title.id = idStr+"_title";
+    title.innerHTML=idStr;
+    calculatecon.appendChild(title);
+}
+
+var checkList = [];
+function drawDays(con,idStr,dayArray){
+    dayArray.forEach(function(item,index){
+        var li = document.createElement('li');
+        li.className = 'oneDay';
+        if (item==0) {
+            con.appendChild(li);
+            li.style.border = '#fff 1px solid';
+            li.innerHTML = '';
+        }else{
+            var dayId = idStr +'_'+item;
+            con.appendChild(li);
+            li.id = dayId;
+            li.innerHTML = item;
+            var point = document.createElement('div');
+            point.style.width='10px';
+            point.style.height = '10px';
+            point.style.backgroundColor = "#fff";
+            point.style.borderRadius = '50%';
+            point.style.margin = '0 auto';
+            li.appendChild(point);
+            li.onclick = function(){
+                var value = li.value;
+                if (value!=1){
+                    if (value!=2) {
+                        point.style.background = '#ffbf73';
+                        li.value = 2;
+                        checkList.push(dayId);
+                        alert(dayId);
+                    }else{
+                        li.value="";
+                        point.style.background = '#fff';
+                        if (checkList!=null) {
+                            var n = checkList.indexOf(dayId);
+                            checkList1 = checkList.slice(n+1);
+                            checkList2 = checkList.slice(0,n);
+                            checkList1.forEach(function(item){
+                                checkList2.push(item);
+                            })
+                            checkList = checkList2;
+                        };
+                    }
+                }
+
+            }
+        }
+
+    })
+    setChecked(data);
+}
+
+
+function setChecked(dateArray){
+    for (var i = 0; i < dateArray.length; i++) {
+        var cYear = dateArray[i].year;
+        var cMonth = dateArray[i].month;
+        var cDay = dateArray[i].day;
+        var cIdStr = cYear+'_'+cMonth+'_'+cDay;
+        var dom = document.getElementById(cIdStr);
+        if(dom){
+            dom.lastChild.style.background="#c6db60";
+            dom.value = '1';
+        }
+    };
+
+}
+
+// Array.prototype.remove = function (dx) {
+//     if (isNaN(dx) || dx > this.length) {
+//         return false;
+//     }
+//     for (var i = 0, n = 0; i < this.length; i++) {
+//         if (this[i] != this[dx]) {
+//             this[n++] = this[i];
+//         }
+//     }
+//     this.length -= 1;
+// };
+
+function getOtherMonth(n){
+    var thisDate = new Date();
+    var thisMonth = thisDate.getMonth();
+    var thisYear = thisDate.getFullYear();
+    
+    var newYear = thisYear;
+    var newMonth = thisMonth;
+    var deltaYear = 0;
+    var idStr
+    
+    if(thisMonth+n<0){
+        if(n%12+thisMonth<0) {
+            newMonth = 12-((12-thisMonth+Math.abs(n))%12)%12;
+        }else{
+            newMonth = n%12+thisMonth;
+        }                                                       //向前找月份至前几年
+        deltaYear = Math.floor((12-thisMonth+Math.abs(n)-1)/12);
+        newYear = thisYear-deltaYear;
+        console.log("向前找月份至前几年"+newYear+'_'+newMonth);
+    }
+    else if(thisMonth+n>11){                                    //向后找月份至后几年
+        newMonth = (thisMonth+n)%12;
+        deltaYear = Math.floor((thisMonth+n)/12);
+        newYear = thisYear+deltaYear;
+        console.log("向后找月份至后几年"+newYear+'_'+newMonth);
+    }
+    else{                                                       //向前或向后不用改变年份
+        newMonth = thisMonth+n;
+    }
+
+    var newDate = new Date(newYear,newMonth,1);
+    createCalculate(newDate,n);
+    idStr = newYear+"_"+(newMonth+1);
+    return idStr;
+}
+
+// function clearOldMonth(n){
+//  var thisDate = new Date();
+//  var thisMonth = thisDate.getMonth();
+//  var thisYear = thisDate.getFullYear();
+//  var newYear = thisYear;
+//  var newMonth = thisMonth;
+//  var deltaYear = 0;
+//  var idStr
+//  if(thisMonth+n<0){
+//      if(n%12+thisMonth<0) {
+//          newMonth = 12-((12-thisMonth+Math.abs(n))%12)%12;
+//      }else{
+//          newMonth = n%12+thisMonth;
+//      }                                                       //向前找月份至前几年
+//      deltaYear = Math.floor((12-thisMonth+Math.abs(n)-1)/12);
+//      newYear = thisYear-deltaYear;
+//      console.log("清理向前找月份至前几年"+newYear+'_'+newMonth)
+//  }
+//  else if(thisMonth+n>11){                                    //向后找月份至后几年
+//      newMonth = (thisMonth+n)%12;
+//      deltaYear = Math.floor((thisMonth+n)/12);
+//      newYear = thisYear+deltaYear;
+//  }
+//  else{                                                       //向前或向后不用改变年份
+//      newMonth = thisMonth+n;
+//  }
+//  var newDate = new Date(newYear,newMonth,1);
+//  createCalculate(newDate,n);
+//  idStr = newYear+"_"+(newMonth+1);
+
+//  var removeDom = document.getElementById(idStr);
+//  if (removeDom.parentNode) {
+//      removeDom.parentNode.removeChild(removeDom);
+//  };
+//  console.log("clearMonth:"+idStr +"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+// }
+
+// function getPreIdString(n){
+//  var thisDate = new Date();
+//  var thisMonth = thisDate.getMonth();
+//  var thisYear = thisDate.getFullYear();
+//  var newYear = thisYear;
+//  var newMonth = thisMonth;
+//  var deltaYear = 0;
+//  if (thisMonth+n+2<0) {
+//      newMonth = (thisMonth+n+2)%12+12;
+//      deltaYear = Math.ceil((thisMonth+1+Math.abs(n)-2)/12);
+//      newYear = thisYear-deltaYear;
+//  }else{
+//      newMonth = thisMonth+n+2;
+//  };
+//  newIdStr = newYear+"_"+(newMonth+1);
+//  return newIdStr;
+// }
+
+
+
+
+
+// function clearMore(n){
+
+// }
+
+function createNMonth(now, n){
+    var height = 0;
+    var idlist = []
+    if (now>0) {
+        for (var i = 0; i < n; now++) {
+            getOtherMonth(now);
+            i++;
+        };
+    } else {
+        for (var i = 0; i < n; now--) {
+            var idStr = getOtherMonth(now);
+            height = height + document.getElementById(idStr).offsetHeight;
+            i++;
+        };
+    }
+    var obj = {};
+    obj.height = height;
+    console.log('height:'+height);
+    obj.n = now;
+    console.log('nows:'+now);
+    return obj;
+}
+
+
+function createTwoYear(n){
+
+    return createNMonth(n,24);
+    
+}
+
+var nowDate = new Date();
+// var nowTitleId = nowDate.getFullYear()+"_"+(nowDate.getMonth()+1)
+
+createCalculate(nowDate,0);
+
+var preloadBeforeMonthNum = 6;
+var preloadAfterMonthNum = 5;
+
+var beforeThreeMonth = createNMonth(-1, preloadBeforeMonthNum);
+var afterThreeMonth = createNMonth(1, preloadAfterMonthNum);
+// var beforeThreeMonth = createOneYear(-1);
+// var afterThreeMonth = createOneYear(1);
+// var id1 = getOtherMonth(-1);
+// var id2 = getOtherMonth(-2);
+// var id3 = getOtherMonth(-3);
+// getOtherMonth(1);
+// getOtherMonth(2);
+// getOtherMonth(3);
+// setChecked(data);
+// console.log(beforeThreeMonth.height);
+scrollTo(0,beforeThreeMonth.height); 
+console.log(beforeThreeMonth.height);                                
+// document.getElementById(nowTitleId).scrollIntoView();      //iphone5s兼容有问题
+// alert(document.getElementById(nowTitleId).id)
+
+var today = new Date();
+var todayIdStr = today.getFullYear()+"_"+(today.getMonth()+1)+'_'+today.getDate();
+document.getElementById(todayIdStr).style.color = "#2c62d5";
+var preMonth = -(preloadBeforeMonthNum+1);
+var nextMonth = preloadAfterMonthNum+1;
+
+var flag = true;
+var resetHeight = 0;
+
+window.addEventListener('touchend',function(){
+    
+    console.log("document.body.scrollHeight:"+document.body.scrollHeight);
+    // console.log('document.body.clientHeight:'+document.body.clientHeight);
+    console.log('document.body.scrollTop:'+document.body.scrollTop);
+    // alert("start")
+    // var h1=document.body.scrollHeight;
+    // var h2=document.body.clientHeight;
+    // var h3=document.body.scrollTop;
+    // var h4=document.body.scrollHeight-document.body.scrollTop;
+    // console.log('结果:'+h4)
+    if ((document.body.scrollTop>2000)&&(document.body.scrollHeight-document.body.scrollTop<1500)) {       //向下滚
+        console.log('向下滚'+nextMonth);
+        // getOtherMonth(nextMonth);
+        oneYear = createTwoYear(nextMonth);
+        // clearOldMonth(nextMonth-7);
+        // setChecked(data);
+        nextMonth = oneYear.n;
+        nextMonth++;
+    };
+    var scrollReferenceH = 900;        //临界高度
+    if ((document.body.scrollTop)<scrollReferenceH) {
+
+        console.log('向上滚'+preMonth);
+        // var idStr = getOtherMonth(preMonth);
+        if (flag){
+            flag = false;
+            var twoYear = createTwoYear(preMonth);
+            var height = twoYear.height;
+            console.log("h:"+height);
+            resetHeight = height;
+            scrollReferenceH = height*0.8;          
+            // alert('临界高度为：'+scrollReferenceH);          //参考距离变大到新加载的年份的高度的0.5倍
+
+
+            // alert(scrollReferenceH);
+            if (resetHeight > 0){
+
+                // setTimeout('flag = resetScroll(resetHeight);',500)
+                resetScroll(resetHeight);
+                // window.scrollTo(0,document.body.scrollTop+height);
+                // flag = true;
+
+                // alert("here");
+
+                // window.scrollTo(0,document.body.scrollTop+resetHeight);
+                // flag = true;
+                
+                // alert("here");
+                // console.log("scrolled");
+                flag = true;
+                // setTimeout('flag = true;',500); 
+                // flag = true;
+            }
+            // alert("end" + flag + resetHeight);
+            // resetHeight = 0;
+            // setTimeout('flag=true',1000);
+        }
+        // flag = resetScroll(height);
+
+        console.log(flag);
+        preMonth = twoYear.n;
+
+    };
+})
+
+// window.ontouchend = function(){
+//     console.log("document.body.scrollHeight:"+document.body.scrollHeight);
+//     // console.log('document.body.clientHeight:'+document.body.clientHeight);
+//     console.log('document.body.scrollTop:'+document.body.scrollTop);
+//     // alert("start")
+//     // var h1=document.body.scrollHeight;
+//     // var h2=document.body.clientHeight;
+//     // var h3=document.body.scrollTop;
+//     // var h4=document.body.scrollHeight-document.body.scrollTop;
+//     // console.log('结果:'+h4)
+//     if ((document.body.scrollTop>2000)&&(document.body.scrollHeight-document.body.scrollTop<1500)) {       //向下滚
+//         console.log('向下滚'+nextMonth);
+//         // getOtherMonth(nextMonth);
+//         oneYear = createTwoYear(nextMonth);
+//         // clearOldMonth(nextMonth-7);
+//         // setChecked(data);
+//         nextMonth = oneYear.n;
+//         nextMonth++;
+//     };
+//     var scrollReferenceH = 900;        //临界高度
+//     if ((document.body.scrollTop)<scrollReferenceH) {
+
+//         console.log('向上滚'+preMonth);
+//         // var idStr = getOtherMonth(preMonth);
+//         if (flag){
+//             flag = false;
+//             var twoYear = createTwoYear(preMonth);
+//             var height = twoYear.height;
+//             console.log("h:"+height);
+//             resetHeight = height;
+//             scrollReferenceH = height*0.8;          
+//             // alert('临界高度为：'+scrollReferenceH);          //参考距离变大到新加载的年份的高度的0.5倍
+
+
+//             // alert(scrollReferenceH);
+//             if (resetHeight > 0){
+
+//                 // setTimeout('flag = resetScroll(resetHeight);',500)
+//                 resetScroll(resetHeight);
+//                 // window.scrollTo(0,document.body.scrollTop+height);
+//                 // flag = true;
+
+//                 // alert("here");
+
+//                 // window.scrollTo(0,document.body.scrollTop+resetHeight);
+//                 // flag = true;
+                
+//                 // alert("here");
+//                 // console.log("scrolled");
+//                 flag = true;
+//                 // setTimeout('flag = true;',500); 
+//                 // flag = true;
+//             }
+//             // alert("end" + flag + resetHeight);
+//             // resetHeight = 0;
+//             // setTimeout('flag=true',1000);
+//         }
+//         // flag = resetScroll(height);
+
+//         console.log(flag);
+//         preMonth = twoYear.n;
+
+//     };
+// }
+
+// window.onscroll = function(){
+//     if (resetHeight > 0){
+//         // flag = resetScroll(resetHeight);
+//         scrollTo(0,document.body.scrollTop+resetHeight);
+//         // alert("scrolled");
+//         flag = true;
+//     }
+//     // alert("end" + flag + resetHeight);
+//     resetHeight = 0;
+// }
+
+// window.onscroll = function(){
+    // console.log("document.body.scrollHeight:"+document.body.scrollHeight);
+    // // console.log('document.body.clientHeight:'+document.body.clientHeight);
+    // console.log('document.body.scrollTop:'+document.body.scrollTop);
+    // // var h1=document.body.scrollHeight;
+    // // var h2=document.body.clientHeight;
+    // // var h3=document.body.scrollTop;
+    // // var h4=document.body.scrollHeight-document.body.scrollTop;
+    // // console.log('结果:'+h4)
+    // if ((document.body.scrollTop>2000)&&(document.body.scrollHeight-document.body.scrollTop<1500)) {       //向下滚
+    //     console.log('向下滚'+nextMonth);
+    //     // getOtherMonth(nextMonth);
+    //     oneYear = createOneYear(nextMonth);
+    //     // clearOldMonth(nextMonth-7);
+    //     // setChecked(data);
+    //     nextMonth = oneYear.n;
+    //     nextMonth++;
+    // };
+    // if ((document.body.scrollTop)<500) {
+    //     flag = false;
+
+    //     console.log('向上滚'+preMonth);
+    //     // var idStr = getOtherMonth(preMonth);
+    //     if (flag){
+    //         var oneYear = createOneYear(preMonth);
+    //         var height = oneYear.height;
+    //         console.log("h:"+height);
+    //     }
+    //     flag = resetScroll(height);
+    //     console.log(flag)
+    //     preMonth = oneYear.n;
+
+    // };
+// }
+
+// window.onscrollend = function(){
+//     alert("test");
+// }
+
+function resetScroll(height){
+    // alert('scroll:'+height);
+    window.scrollTo(0,document.body.scrollTop+height);
+    return true;
+}
+</script>
+</body>
+</html>
